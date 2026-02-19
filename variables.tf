@@ -18,4 +18,8 @@ variable "tags" {
   type    = map(string)
   default = {}
 Variable "Test2"
+
+Variable "Test"
+
+
 }
