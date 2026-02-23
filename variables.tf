@@ -19,7 +19,4 @@ variable "tags" {
   default = {}
 Variable "Test2"
 
-Variable "Test"
-
-
 }
