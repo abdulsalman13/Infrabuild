@@ -20,6 +20,6 @@ variable "tags" {
 Variable "Test2"
 
 Variable "Test"
-
+type = string
 
 }
