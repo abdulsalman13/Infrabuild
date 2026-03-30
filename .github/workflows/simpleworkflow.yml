@@ -10,5 +10,5 @@ jobs:
        steps:
         - name: Checkout Code
           uses: actions/checkout@v4
-        - name: listing the repo
-          run: ls -l
+        - name: Running the Terraform command
+          run: terraform init
