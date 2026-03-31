@@ -12,3 +12,9 @@ jobs:
           uses: actions/checkout@v4
         - name: Running the Terraform command
           run: terraform init
+
+        - name: running terraform plan 
+          run: terraform plan
+
+        - name: running terraform apply
+          run: terraform apply
