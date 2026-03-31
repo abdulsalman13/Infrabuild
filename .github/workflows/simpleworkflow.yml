@@ -7,9 +7,17 @@ on:
 jobs:
   hello:
     runs-on: [infra]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
       - name: Azure Login (Service Principal)
         uses: azure/login@v2
@@ -22,12 +30,11 @@ jobs:
               "tenantId": "${{ secrets.TENANT_ID }}"
             }
 
-      - name: Running the Terraform command
+      - name: Terraform Init
         run: terraform init
 
-      - name: Running terraform plan
+      - name: Terraform Plan
         run: terraform plan
 
-      - name: Running terraform apply
+      - name: Terraform Apply
         run: terraform apply --auto-approve
-
