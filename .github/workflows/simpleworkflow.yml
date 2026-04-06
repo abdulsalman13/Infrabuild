@@ -34,13 +34,18 @@ jobs:
           echo "GITHUB_REF=$GITHUB_REF"
           echo "GITHUB_REF_NAME=$GITHUB_REF_NAME"
 
-          if [[ "$GITHUB_REF" == "refs/heads/main" || "$GITHUB_REF" == "refs/heads/dev" ]]; then
-            echo "Running terraform for branch $GITHUB_REF_NAME"
-            terraform --version
-            terraform init
-            terraform plan -var-file="${GITHUB_REF_NAME}.tfvars"
-            terraform apply -var-file="${GITHUB_REF_NAME}.tfvars" --auto-approve
-          else
-            echo "This workflow is allowed only for main or dev branch"
+          TFVARS_FILE="${GITHUB_REF_NAME}.tfvars"
+          echo "Using tfvars file: $TFVARS_FILE"
+
+          if [[ ! -f "$TFVARS_FILE" ]]; then
+            echo "File $TFVARS_FILE not found"
             exit 1
           fi
+
+          echo "Contents of $TFVARS_FILE"
+          cat "$TFVARS_FILE"
+
+          terraform --version
+          terraform init
+          terraform plan -var-file="$TFVARS_FILE"
+          terraform apply -var-file="$TFVARS_FILE" --auto-approve
