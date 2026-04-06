@@ -31,5 +31,5 @@ jobs:
           echo "Running terraform for branch $GITHUB_REF_NAME"
           terraform --version
           terraform init
-          terraform plan -var-file="${GITHUB_REF_NAME}.tfvars"
-          terraform apply -var-file="${GITHUB_REF_NAME}.tfvars" --auto-approve
+          terraform plan -var-file="${GITHUB_REF_NAME}.tf"
+          terraform apply -var-file="${GITHUB_REF_NAME}.tf" --auto-approve
