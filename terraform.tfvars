@@ -1,5 +1,5 @@
 resource_group_name = "rg-main-intellix"
-location= "canada central"
+resource_group_location= "canada central"
 
 
 
