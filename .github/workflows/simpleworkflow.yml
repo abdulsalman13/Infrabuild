@@ -21,12 +21,20 @@ jobs:
               "subscriptionId": "${{ secrets.SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.TENANT_ID }}"
             }
-
-      - name: Running the Terraform command
-        run: terraform init
-
-      - name: Running terraform plan
-        run: terraform plan
-
-      - name: Running terraform apply
-        run: terraform apply --auto-approve
+     
+      
+      - name: Print Terraform Version
+        run: |
+                if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+                      echo "Running terraform for branch $GITHUB_REF_NAME"
+                      terraform init
+                      terraform plan 
+                      terrafrom apply -f $GITHUB_REF_NAME.tfvars --auto-approve
+                elif [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
+                    echo "Running terraform for branch $GITHUB_REF_NAME"
+                    terraform init
+                    terraform plan 
+                    terraform apply -f $GITHUB_REF_NAME.tfvars
+                else
+                  echo "I am allowed to run the flow in dev or main branch"
+                fi
