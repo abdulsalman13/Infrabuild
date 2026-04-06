@@ -2,14 +2,20 @@ name: Hello Infra Runner
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
 
 jobs:
   hello:
     runs-on: [infra]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
 
       - name: Azure Login (Service Principal)
         uses: azure/login@v2
@@ -21,20 +27,20 @@ jobs:
               "subscriptionId": "${{ secrets.SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.TENANT_ID }}"
             }
-     
-      
-      - name: Print Terraform Version
+
+      - name: Run Terraform
+        shell: bash
         run: |
-                if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
-                      echo "Running terraform for branch $GITHUB_REF_NAME"
-                      terraform init
-                      terraform plan 
-                      terrafrom apply -f $GITHUB_REF_NAME.tfvars --auto-approve
-                elif [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
-                    echo "Running terraform for branch $GITHUB_REF_NAME"
-                    terraform init
-                    terraform plan 
-                    terraform apply -f $GITHUB_REF_NAME.tfvars
-                else
-                  echo "I am allowed to run the flow in dev or main branch"
-                fi
+          if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+            echo "Running terraform for branch $GITHUB_REF_NAME"
+            terraform init
+            terraform plan -var-file="${GITHUB_REF_NAME}.tfvars"
+            terraform apply -var-file="${GITHUB_REF_NAME}.tfvars" --auto-approve
+          elif [[ "$GITHUB_REF" == "refs/heads/dev" ]]; then
+            echo "Running terraform for branch $GITHUB_REF_NAME"
+            terraform init
+            terraform plan -var-file="${GITHUB_REF_NAME}.tfvars"
+            terraform apply -var-file="${GITHUB_REF_NAME}.tfvars" --auto-approve
+          else
+            echo "I am allowed to run the flow in dev or main branch"
+          fi
