@@ -1,53 +1,47 @@
-name: Hello Infra Runner
+name: Terraform Deploy by Branch
 
 on:
   push:
     branches:
       - main
       - dev
-  workflow_dispatch:
-
 
 jobs:
-  hello:
-    runs-on: [infra]
+  terraform:
+    runs-on: Infra
+
+    # Select environment (prod for main, dev otherwise)
+    environment: ${{ github.ref_name == 'main' || 'dev' }}
 
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Say Hello
-        run: echo "Hello I am running this job on self hosted runner"
-
       - name: Azure Login
-        uses: azure/login@v2
+        uses: azure/login@v1
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.CLIENT_ID }}",
-              "clientSecret": "${{ secrets.CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.TENANT_ID }}"
-            }
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Print Branch And Run Terraform
-        shell: bash
+      - name: Set Terraform vars file
         run: |
-          echo "GITHUB_REF=$GITHUB_REF"
-          echo "GITHUB_REF_NAME=$GITHUB_REF_NAME"
-
-          TFVARS_FILE="${GITHUB_REF_NAME}.tfvars"
-          echo "Using tfvars file: $TFVARS_FILE"
-
-          if [[ ! -f "$TFVARS_FILE" ]]; then
-            echo "File $TFVARS_FILE not found"
+          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+            echo "TFVARS=main.tfvars" >> $GITHUB_ENV
+          elif [[ "$GITHUB_REF_NAME" == "dev" ]]; then
+            echo "TFVARS=dev.tfvars" >> $GITHUB_ENV
+          else
+            echo "Unsupported branch"
             exit 1
           fi
 
-          echo "Contents of $TFVARS_FILE"
-          cat "$TFVARS_FILE"
+      - name: Terraform Init
+        run: terraform init
 
-          terraform --version
-          terraform init
-          terraform plan -var-file="$TFVARS_FILE"
-          terraform apply -var-file="$TFVARS_FILE" --auto-approve
+      - name: Terraform Plan
+        run: terraform plan -var-file=$TFVARS
+
+      - name: Terraform Apply
+        if: github.ref_name == 'main'
+        run: terraform apply -auto-approve -var-file=$TFVARS
