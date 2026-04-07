@@ -9,7 +9,6 @@ on:
 jobs:
   terraform:
     runs-on: [Infra]
-
     environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
 
     steps:
@@ -30,7 +29,6 @@ jobs:
       - name: Set Terraform vars file
         shell: bash
         run: |
-          echo "GITHUB_REF=$GITHUB_REF"
           echo "GITHUB_REF_NAME=$GITHUB_REF_NAME"
 
           if [[ "$GITHUB_REF_NAME" == "main" ]]; then
