@@ -9,7 +9,7 @@ on:
 jobs:
   terraform:
     runs-on: [Infra]
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: ${{ github.ref_name == 'main' && 'main' || 'dev' }}
 
     steps:
       - name: Checkout
