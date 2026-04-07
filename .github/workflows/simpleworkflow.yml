@@ -11,8 +11,8 @@ jobs:
     runs-on: Infra
 
     # Select environment (prod for main, dev otherwise)
-    environment: ${{ github.ref_name == 'main' || 'dev' }}
-
+     environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,5 +43,4 @@ jobs:
         run: terraform plan -var-file=$TFVARS
 
       - name: Terraform Apply
-        if: github.ref_name == 'main'
         run: terraform apply -auto-approve -var-file=$TFVARS
