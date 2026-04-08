@@ -1,16 +1,12 @@
 name: Terraform Deploy by Branch
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-
+  push
+    
 jobs:
   terraform:
     runs-on: [Infra]
-    environment: ${{ github.ref_name == 'main' && 'main' || 'dev' }}
-
+    
     steps:
      - name: Azure Login
        uses: azure/login@v2
