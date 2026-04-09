@@ -4,24 +4,18 @@ on:
   push
 
 jobs:
-   build-java:
+   build:
+     uses: ./.github/workflows/template.yaml
+   test:
      runs-on: [infra]
+     needs: [build]
      steps:
-        - name: Build Java Application
-          run: echo "I am in build phase" > app.txt
-        - name: Upload the Artifact
-          uses: actions/upload-artifact@v4
-          with:
-             name: app-file
-             path: app.txt
-   
-   read-Code:
-       runs-on: [infra]
-       needs: [build-java]
-       steps:
-          - name: Download the File
-            uses: actions/download-artifact@v4
-            with:
-               name: app-file
-          - name: Read the File
-            run: cat app.txt
+       - name: Running Test Job
+         run: echo "Run test job"
+
+   deploy:
+     runs-on: [infra]
+     needs: [build, test]
+     steps:
+      - name: Running Deploy Job
+        run: echo "Run Deploy Job"
