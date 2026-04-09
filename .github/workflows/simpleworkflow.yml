@@ -1,22 +1,31 @@
-name: Terraform Deploy by Branch
+name: Hello Infra Runner
 
-on:
+on: 
   push
-    
+
 jobs:
-  terraform:
-    runs-on: [Infra]
-    
-    steps:
-     - name: Azure Login
-       uses: azure/login@v2
-       with:
-         client-id: "2e9a3828-1569-4e4e-87a6-ef7225e805fe"
-         tenant-id: "cd8177ae-cf99-418c-8112-0df20540df57"
-         subscription-id: "06fecad9-494c-4576-8d3e-2932882a4d5e"
-     - name: Get Key Vault Secrets
-       uses: azure/get-keyvault-secrets@v1
-       with:
-          keyvault: "kv-intellix-dev-secrets"
-          secrets: |
-                AZURE-CLIENT-ID
+   build-java:
+     runs-on: [infra]
+     steps:
+        - name: Build Java Application
+          run: echo "I am in build phase"
+   
+   build-python:
+     runs-on: [infra]
+     steps:
+        - name: Build Pythn Application
+          run: echo "I am in build phase"       
+
+   test:
+      runs-on: [infra]
+      needs: [build-java,build-python]
+      steps:
+        - name: Test Job
+          run: echo1 "Running Test Job"
+
+   deploy:
+      runs-on: [infra]
+      needs: [build-java,build-python,test]
+      steps:
+        - name: Deploy Job
+          run: echo "Running Deploy Job"
