@@ -21,7 +21,7 @@ jobs:
       needs: [build-java,build-python]
       steps:
         - name: Test Job
-          run: echo1 "Running Test Job"
+          run: echo "Running Test Job"
 
    deploy:
       runs-on: [infra]
