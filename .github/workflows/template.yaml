@@ -1,0 +1,11 @@
+name: template artifact
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: [infra] 
+    steps:
+      - name: Build Job
+        run: echo "Running Build Job from Template"
